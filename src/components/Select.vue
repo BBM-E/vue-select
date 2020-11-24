@@ -61,9 +61,9 @@
           :key="getOptionKey(option)"
           :id="`vs${uid}__option-${index}`"
           class="vs__dropdown-option"
-          :class="{ 'vs__dropdown-option--selected': isOptionSelected(option), 'vs__dropdown-option--highlight': index === typeAheadPointer, 'vs__dropdown-option--disabled': !selectable(option) }"
+          :class="{ 'vs__dropdown-option--selected': isOptionSelected(option), 'vs__dropdown-option--highlight': index === typeAheadPointer, 'vs__dropdown-option--disabled': !selectable(option), 'vs__dropdown-option--simpleHover': !preselectOnHover }"
           :aria-selected="index === typeAheadPointer ? true : null"
-          @mouseover="selectable(option) ? typeAheadPointer = index : null"
+          @mouseover="preselectOnHover && selectable(option) ? typeAheadPointer = index : null"
           @mousedown.prevent.stop="selectable(option) ? select(option) : null"
         >
           <slot name="option" v-bind="normalizeOptionForSlot(option)">
@@ -572,6 +572,27 @@
        * @type {Boolean}
        */
       autoFocus: {
+        type: Boolean,
+        default: false
+      },
+
+      /**
+       * Disable pre-selection of the option on hover and
+       * enable a simpler, native CSS hover effect. Greatly
+       * improve performances for big options lists.
+       * @type {Boolean}
+       */
+      preselectOnHover: {
+        type: Boolean,
+        default: true
+      },
+
+      /**
+       * Open the drop-down only when searching a few
+       * keystrokes. Useful for big options lists.
+       * @type {Boolean}
+       */
+      openOnlyOnSearch: {
         type: Boolean,
         default: false
       }
@@ -1149,7 +1170,7 @@
        * @return {Boolean} True if open
        */
       dropdownOpen() {
-        return this.noDrop ? false : this.open && !this.mutableLoading
+        return this.noDrop ? false : (this.open && !this.mutableLoading && (!this.openOnlyOnSearch || this.searching))
       },
 
       /**
