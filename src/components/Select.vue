@@ -78,6 +78,12 @@
       <ul v-else :id="`vs${uid}__listbox`" role="listbox" style="display: none; visibility: hidden;"></ul>
     </transition>
     <slot name="footer" v-bind="scope.footer" />
+    <slot name="input" v-if="name">
+      <template v-if="multiple">
+        <input v-for="value in _inputReducedValue" :name="name" :value="value">
+      </template>
+      <input v-else type="hidden" :name="name" :value="_inputReducedValue">
+    </slot>
   </div>
 </template>
 
@@ -595,6 +601,17 @@
       openOnlyOnSearch: {
         type: Boolean,
         default: false
+      },
+
+      /**
+       * Name of the input to be added in the DOM for the form. If a name
+       * is provided, an hidden (or multiple in case of multiple select)
+       * will be inserted in the DOM.
+       * @type {String||null}
+       */
+      name: {
+        type: String,
+        default: ''
       }
     },
 
@@ -605,7 +622,8 @@
         open: false,
         isComposing: false,
         pushedTags: [],
-        _value: [] // Internal value managed by Vue Select if no `value` prop is passed
+        _value: [], // Internal value managed by Vue Select if no `value` prop is passed
+        _inputReducedValue: [] // Internal reduced value when Vue Select managed the hidden input fields
       }
     },
 
@@ -754,6 +772,10 @@
           } else {
             value = this.reduce(value);
           }
+        }
+
+        if (this.name) {
+          this._inputReducedValue = value;
         }
 
         this.$emit('input', value);
