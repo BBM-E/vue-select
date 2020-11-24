@@ -565,6 +565,15 @@
           dropdownList.style.left = left;
           dropdownList.style.width = width;
         }
+      },
+
+      /**
+       * Focus the input when the component is mounted.
+       * @type {Boolean}
+       */
+      autoFocus: {
+        type: Boolean,
+        default: false
       }
     },
 
@@ -1181,6 +1190,17 @@
        */
       showClearButton() {
         return !this.multiple && this.clearable && !this.open && !this.isValueEmpty
+      },
+
+      /**
+       * Mounted routine, check if we need to focus the component
+       */
+      mounted() {
+        if (this.autoFocus) {
+          this.$nextTick(() => {
+            this.searchEl.focus();
+          });
+        }
       },
     },
 
