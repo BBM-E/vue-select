@@ -808,6 +808,15 @@
           this.searchEl.blur();
         } else if (!this.disabled) {
           this.open = true;
+          if (!this.isValueEmpty) {
+            this.$nextTick(() => {
+              let selectedOptionElement = this.$refs.dropdownMenu.querySelector('li.vs__dropdown-option--selected');
+              if (selectedOptionElement) {
+                selectedOptionElement.classList.add('vs__dropdown-option--highlight');
+                this.$refs.dropdownMenu.scrollTop = selectedOptionElement.offsetTop;
+              }
+            });
+          }
           this.searchEl.focus();
         }
       },
